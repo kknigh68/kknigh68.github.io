@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Using TheMovieDB</title>
+    <meta name="viewport" content="width=device-width">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.0/mustache.min.js"></script>
+    
+    
+    <script id="movietemplate" type="text/template">
+		{{#results}}
+		<div class='movie' >
+			<img src='https://image.tmdb.org/t/p/w185{{poster_path}}' width='185' />
+            <a href="#results1" onclick="detailsFunction({{id}})">{{original_title}}</a>
+			<div>Description:<br>{{overview}}</div>
+		</div>
+		{{/results}}
+	</script>
+
+
+    <script id="movieinfo" type="text/template">
+        <img src='https://image.tmdb.org/t/p/w185{{poster_path}}' width='185' />
+		<p>
+            Tagline: {{tagline}}<br>
+            Overview: {{overview}}<br>
+            Avg. Rating: {{vote_average}} / 10 ({{vote_count}})<br>
+            Genres: {{#genres}}{{name}}, {{/genres}}<br>
+            Revenue and Budget:{{revenue}} / {{budget}}<br>
+            Runtime (minutes): {{runtime}}
+        </p>
+	</script>
+    <script id="castinfo" type="text/template">
+		<p>
+            {{#cast}}
+                Name: <a href="#results" onclick="actorInfo({{id}})">{{name}}</a><br>
+                Character: {{character}}
+            {{/cast}}
+        </p>
+	</script>
+
+    <script id="actortemplate" type="text/template">
+		{{#results}}
+		<div class='actor'>
+			<a href="#results" onclick="actorInfo({{id}})">{{name}}</a><br>
+			<img src='https://image.tmdb.org/t/p/w185{{profile_path}}' />>
+			<div>Popularity: {{popularity}}</div>
+		</div>
+		{{/results}}
+	</script>
+
+    <script id="actorinfo" type="text/template">
+        <img src='https://image.tmdb.org/t/p/w185{{profile_path}}' width='185' />
+		<p>
+            Name: {{name}}<br>
+            Popularity: {{popularity}}<br>
+            Known for: {{known_for_department}}<br>
+            Birthday: {{birthday}}<br>
+            Biography: {{biography}}
+        </p>
+	</script>
+
+
+    <script type="text/javascript">
+    let APIKEY = '2176560523571f73dea0c42610a5a32d';
+//Movie search
+        $(document).ready(function ()
+        
+        {
+            var resultspage=0
+            $("#search").click(function ()
+        {
+            $("#results").html("");
+			resultspage=1;
+			loadmovies(resultspage);
+			
+        });
+		
+		$(document).on('scroll', function() 
+		{
+			if($(document).scrollTop() + $(window).height() >= $(document).height()-1) 
+			{
+				resultspage++;
+				loadmovies(resultspage);
+			}
+		});
+            function loadmovies(page)
+            {
+
+                $("#results").html("Searching ...");
+                $.getJSON('https://api.themoviedb.org/3/search/movie?api_key='+ APIKEY + '&language=en-US&query=' + $("#txtTerm").val() + '&page=' + resultspage, function (jsonData)
+                {
+                    console.log(jsonData)
+                    for (i=0;i<jsonData.results.length;i++)
+                    {
+                        $("#results").append("Page"+ page);
+                        var template = $('#movietemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results").html(html);
+
+                    }
+                });
+            }
+            });
+//Actor Search
+        $(document).ready(function ()
+        {
+            var resultspage=0
+            $("#actorsearch").click(function ()
+        {
+            $("#results").html("");
+			resultspage=1;
+			loadactors(resultspage);
+			
+        });
+		
+		$(document).on('scroll', function() 
+		{
+			if($(document).scrollTop() + $(window).height() >= $(document).height()-1) 
+			{
+				resultspage++;
+				loadactors(resultspage);
+			}
+		});
+        function loadactors(page)
+        {
+                $("#results").html("Searching ...");
+                $.getJSON('https://api.themoviedb.org/3/search/person?api_key='+ APIKEY + '&language=en-US&query=' + $("#actorTerm").val() + '&page=' + resultspage, function (jsonData)
+                {
+                    console.log(jsonData)
+                    for (i=0;i<jsonData.results.length;i++)
+                    {
+                        $("#results").append("Page" + page);
+                        var template = $('#actortemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results").html(html);
+                    }
+                });
+            }
+            });
+        $(document).ready(function ()
+        {
+            $("#best").click(function ()
+            {
+                $("#results").html("Searching ...");
+                $.getJSON('https://api.themoviedb.org/3/movie/top_rated?api_key='+ APIKEY + '&language=en-US&query=' + $("#txtTerm").val() + '&page=1', function (jsonData)
+                {
+                    console.log(jsonData)
+                    for (i=0;i<jsonData.results.length;i++)
+                    {
+                        $("#results").html("");
+                        var template = $('#movietemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results").html(html);
+                    }
+                });
+            });
+        });
+        $(document).ready(function ()
+        {
+            $("#line").click(function ()
+            {
+                $("#lineview").html("Searching ...");
+                $.getJSON('https://api.themoviedb.org/3/movie/top_rated?api_key='+ APIKEY + '&language=en-US&query=' + $("#txtTerm").val() + '&page=1', function (jsonData)
+                {
+                    console.log(jsonData)
+                    for (i=0;i<jsonData.results.length;i++)
+                    {
+                        $("#lineview").html("");
+                        var template = $('#movietemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#lineview").html(html);
+                    }
+                });
+            });
+        });
+        function detailsFunction(movieid) 
+        {
+                $.getJSON('https://api.themoviedb.org/3/movie/' + movieid + '?api_key='+ APIKEY + '&language=en-US', function (jsonData)
+                {
+                        console.log(jsonData)
+                        $("#moviedetails").html("");
+                        var html = Mustache.render($('#movieinfo').html(), jsonData);
+                        $("#moviedetails").html(html);
+                });
+
+                $.getJSON('https://api.themoviedb.org/3/movie/' + movieid + '/credits?api_key='+ APIKEY + '&language=en-US', function (jsonData)
+                {
+                        console.log(jsonData)
+                        $("#cast").html("");
+                        var html = Mustache.render($('#castinfo').html(), jsonData);
+                        $("#cast").append(html);
+                });
+                
+        }
+
+        function actorInfo(actorid) 
+        {
+                $.getJSON('https://api.themoviedb.org/3/person/' + actorid + '?api_key='+ APIKEY + '&language=en-US', function (jsonData)
+                {
+                        console.log(jsonData)
+                        $("#actordata").html("");
+                        var html = Mustache.render($('#actorinfo').html(), jsonData);
+                        $("#actordata").html(html);
+                });       
+        }
+    </script>
+
+</head>
+<body>
+    <div id="bannerimage"></div>
+    <div>
+        Movie Search: <input type="text" id="txtTerm" class="searchbox">
+        <input type="button" id="search" value="Search"# class="button" />
+        <input type="button" id="best" value="Highest Rated"# class="button" />
+        <input type="button" id="line" value="Line View"# class="button" />
+        Actor/Actress Search: <input type="text" id="actorTerm">
+        <input type="button" id="actorsearch" value="Search"# class="button" /><br>
+        <p1 id="lineview"></p1>
+        <p1 id="moviedetails"></p1>
+        <p1 id="cast"></p1>
+        <p1 id="actordata"></p1>
+        <p1 id="details1"></p1>
+        <p1 id="actorresults"></p1>
+        <p1 id="results"></p1>
+        <p1 id="topmovies"></p1>
+ 
+    </div> 
+    <style>
+
+        .button {
+        background-color: #555555;
+        border-bottom: 1px solid black;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      } 
+    </style>
+    <style>
+        .searchbox {
+            border-bottom: 1px solid black;      
+        }
+    </style>
+    <style>
+        #results
+        {
+            display: flex; 
+            flex-wrap: wrap;
+            
+        }
+        .movie
+        {
+            width: 20%;
+            margin: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items:flex-start;
+           
+        }
+        #bannerimage {
+         width: 100%;
+         background-image: url(https://media.geeksforgeeks.org/wp-content/uploads/rk.png);
+         height: 50px;
+         background-color: purple;
+         background-position: center;
+    }
+    
+    </style>  
+    <style type="text/css">
+        
+        div
+        {
+            margin: 5px;
+        }
+        
+        #results
+        {
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+            display:flex;
+            width: 1000px;
+            margin: auto;
+        }
+        #main
+        {
+            margin-left: 220px;
+            padding: 10px;
+        }
+        .product
+        {
+            float: left;
+            width: 176px;
+            height: 200px;
+            
+        }
+    </style>
+    
+</body>
+</html>
