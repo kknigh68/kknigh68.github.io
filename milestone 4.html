@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>jQuery Book Search</title>
+	<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.0/mustache.min.js"></script>
+    <script id="booktemplate" type="text/template">
+		{{#items}}
+		<div class='book'>
+			<h2>{{volumeInfo.title}}</h2>
+			<img src='{{volumeInfo.imageLinks.smallThumbnail}}' width='100' />
+			<div>{{volumeInfo.description}}</div>
+		</div>
+		{{/items}}
+	</script>
+	<script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#search").click(function ()
+            {
+                $("#results").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/volumes/?q="+$("#txtTerm").val() + "&startIndex=0&maxResults=10", function (jsonData)
+                {
+                    console.log(jsonData)
+                    for (i=0;i<jsonData.items.length;i++)
+                    {
+                        $("#results").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#grid").click(function ()
+            {
+                $("#resultsgrid").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/volumes/?q="+$("#txtTerm").val() + "&startIndex=0&maxResults=40", function (jsonData)
+                {
+                    for (i=0;i<jsonData.items.length;i++)
+                    {
+                        $("#resultsgrid").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#resultsgrid").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#button2").click(function ()
+            {
+                $("#results2").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/volumes/?q="+$("#txtTerm").val() + "&startIndex=10&maxResults=10", function (jsonData)
+                {
+                    for (i=11;i<20;i++)
+                    {
+                        $("#results2").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results2").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#button3").click(function ()
+            {
+                $("#results3").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/volumes/?q="+$("#txtTerm").val() + "&startIndex=20&maxResults=10", function (jsonData)
+                {
+                    for (i=21;i<30;i++)
+                    {
+                        $("#results3").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results3").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#button4").click(function ()
+            {
+                $("#results4").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/volumes/?q="+$("#txtTerm").val() + "&startIndex=30&maxResults=10", function (jsonData)
+                {
+                    for (i=31;i<40;i++)
+                    {
+                        $("#results4").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results4").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#button5").click(function ()
+            {
+                $("#results5").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/volumes/?q="+$("#txtTerm").val(), function (jsonData)
+                {
+                    for (i=41;i<50;i++)
+                    {
+                        $("#results5").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results5").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function ()
+        {
+            $("#button6").click(function ()
+            {
+                $("#results5").html("Searching ...");
+                $.getJSON("https://www.googleapis.com/books/v1/users/108265412997773686457/bookshelves/1001/volumes/?q="+$("#txtTerm").val(), function (jsonData)
+                {
+                    for (i=0;i<jsonData.items.length;i++)
+                    {
+                        $("#results6").html("");
+                        var template = $('#booktemplate').html();
+                        var html = Mustache.render(template, jsonData);
+                        $("#results6").html(html);
+                    }
+                });
+            });
+        });
+    </script>
+
+</head>
+<body>
+<h1>Book Search using Google Books</h1>
+<div>
+Book Search: <input type="text" id="txtTerm">
+<input type="button" id="search" value="Search"# class="button" />
+<div id="results"></div>
+<input type="button" id="grid" value="Grid Search" href="#" class="button" />
+<div id="resultsgrid"></div>
+<input type="button" id="button2" value="Page 2" href="#" class="button"/>
+<div id="results2"></div>
+<input type="button" id="button3" value="Page 3" href="#" class="button"/>
+<div id="results3"></div>
+<input type="button" id="button4" value="Page 4" href="#" class="button"/>
+<div id="results4"></div>
+<input type="button" id="button5" value="Page 5" href="#" class="button"/>
+<div id="results5"></div>
+<input type="button" id="button6" value="Personal Library" href="#" class="button"/>
+<div id="results6"></div>
+<div id="responseStatus"></div>
+<style>
+    .button {
+    background-color: #555555;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+  } 
+</style>
+<style>
+    #resultsgrid
+    {
+        display: flex; 
+        flex-wrap: wrap;
+    }
+    .book
+    {
+        width: 20%;
+        margin: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items:flex-start;
+    }
+</style>
+</div>
+</body>
+</html>
